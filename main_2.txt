@@ -230,7 +230,7 @@ int keypressed(void)
   	
   return 0;
 }
-void fotofuntion()
+void fotofunction()
 {
   if (analogRead(A1) <= 350) {
     digitalWrite(A2, HIGH);
@@ -275,7 +275,7 @@ void loop()
   basicamente cuando la fotoresistencia este por encima o igual a 350
   el led se va a apagar, mientras tanto, sigue encendido
   */
-  fotofuntion();
+  fotofunction();
   
   
   // Añade un pequeño retraso para evitar el parpadeo
