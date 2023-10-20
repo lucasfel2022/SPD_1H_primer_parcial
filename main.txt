@@ -1,0 +1,261 @@
+// C++ code
+//
+#define A 12 
+#define B 13
+#define C 7
+#define D 8
+#define E 9
+#define F 11
+#define G 10
+#define buttonIncrement  4
+#define buttonDecrement  3
+#define buttonReset  2
+#define decena A5
+#define unidad A4
+#define APAGADOS 0
+#define TIMEDISPLAYON 10
+int countDigit = 0;
+int sube = 1;
+int subePrevia = 1;
+int baja = 1;
+int bajaPrevia = 1;
+int reset = 1; 
+int resetPrevia = 1;
+
+void setup()
+{
+  //defino las entradas y salidas
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(buttonIncrement , INPUT_PULLUP);
+  pinMode(buttonDecrement , INPUT_PULLUP);
+  pinMode(buttonReset, INPUT_PULLUP);
+  digitalWrite(unidad,0);
+  digitalWrite(decena,0);
+  pinMode(unidad,OUTPUT);
+  pinMode(decena,OUTPUT);
+  encenderSegmentos(0);
+  
+}
+void encenderSegmentos(int digit) 
+{ /*bueno esta funcion es la que prende los segmentos de dicho numero
+  a formar*/
+      digitalWrite(A, LOW);
+      digitalWrite(B, LOW);
+      digitalWrite(C, LOW);
+      digitalWrite(D, LOW);
+      digitalWrite(E, LOW);
+      digitalWrite(F, LOW);
+      digitalWrite(G, LOW);
+  switch (digit){
+    case 0:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, LOW);
+      break;
+    }
+    case 1:{
+      digitalWrite(A, LOW);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, LOW);
+      digitalWrite(E, LOW);
+      digitalWrite(F, LOW);
+      digitalWrite(G, LOW);
+      break;
+    }
+      
+    case 2:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, LOW);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, LOW);
+      digitalWrite(G, HIGH);
+    
+      break;
+    }
+    case 3:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, LOW);
+      digitalWrite(F, LOW);
+      digitalWrite(G, HIGH);
+      break;
+    }
+     
+    case 4:{
+      digitalWrite(A, LOW);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, LOW);
+      digitalWrite(E, LOW);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;
+    }
+      
+    case 5:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, LOW);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, LOW);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+  break;}
+    case 6:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, LOW);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;}
+    case 7:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, LOW);
+      digitalWrite(E, LOW);
+      digitalWrite(F, LOW);
+      digitalWrite(G, LOW);
+      break;}
+    case 8:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, HIGH);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;}
+    case 9:{
+      digitalWrite(A, HIGH);
+      digitalWrite(B, HIGH);
+      digitalWrite(C, HIGH);
+      digitalWrite(D, HIGH);
+      digitalWrite(E, LOW);
+      digitalWrite(F, HIGH);
+      digitalWrite(G, HIGH);
+      break;}
+  }
+}
+void prendeDigito(int digito)
+{
+  /* esta funcion ferifica cual display se esta prendiendo,
+  si la unidad o la decena*/
+  if (digito == unidad)
+  {
+    digitalWrite(unidad,LOW);
+    digitalWrite(decena,HIGH);
+    delay(TIMEDISPLAYON);
+  }
+  else if(digito == decena)
+  {
+    digitalWrite(unidad,HIGH);
+    digitalWrite(decena,LOW);
+    delay(TIMEDISPLAYON);
+  }
+  else
+  {
+    digitalWrite(unidad,HIGH);
+    digitalWrite(decena,HIGH);
+  }
+}
+
+void printCount(int count)
+{
+  /*esta funcion lo que hace basicamente es: "APAGADOS" es un define
+ que apaga los dos display para poder despues hacer el calculo y poder prenderlos
+ independientemente*/
+  prendeDigito(APAGADOS);
+  delay(500);
+  encenderSegmentos(count/10);
+  prendeDigito(decena);
+  prendeDigito(APAGADOS);
+  delay(500);
+  encenderSegmentos(count - 10*((int)count/10));
+  prendeDigito(unidad);
+}
+int keypressed(void)
+{
+  // lo que hace esta funcion es verificar el estado de los pulsadores,
+  //los actuales y los anteriores, para darle un valor.
+  sube = digitalRead(buttonIncrement);
+  baja = digitalRead(buttonDecrement);
+  reset	= digitalRead(buttonReset);
+  if(sube == 1)
+    subePrevia = 1;
+  
+  if(baja == 1)
+    bajaPrevia = 1;
+  
+  if(reset ==1)
+    resetPrevia = 1;
+  
+  	if(sube == 0 && sube != subePrevia)
+  	{
+    	subePrevia = sube;
+    	return buttonIncrement;
+  	}
+  	if(baja == 0 && baja != bajaPrevia)
+  	{
+    	bajaPrevia = baja;
+    	return buttonDecrement;
+  	}
+  	
+  	if(reset == 0 && reset != resetPrevia)
+  	{
+    	resetPrevia = reset;
+    	return buttonReset;
+  	}
+  	
+  return 0;
+}
+
+void loop()
+{
+  //verifica el estado de los botones, el anterior y el actual
+  int pressed = keypressed();
+  // las sentencias si se presionan cada uno
+  if (pressed == buttonIncrement)
+  {
+    countDigit++;
+    if(countDigit>99)
+       countDigit = 0;
+    
+  }
+  else if(pressed == buttonDecrement)
+  {
+    countDigit--;
+    if(countDigit < 0)
+       countDigit = 99;
+  }
+  else if(pressed == buttonReset)
+  {
+    countDigit = 0;
+  }
+  // Muestra las unidades
+  encenderSegmentos(countDigit % 10);
+  prendeDigito(unidad);
+  delay(30);  // Añade un pequeño retraso para evitar el parpadeo
+  
+  // Muestra las decenas
+  encenderSegmentos(countDigit / 10);
+  prendeDigito(decena);
+  delay(30);  // Añade un pequeño retraso para evitar el parpadeo
+}
